@@ -2,14 +2,17 @@ package opsgenie
 
 import (
 	"fmt"
-	"github.com/ricoberger/opsgenie/pkg/config"
+	"sync"
 	"time"
+
+	"github.com/ricoberger/opsgenie/pkg/config"
 
 	"github.com/opsgenie/opsgenie-go-sdk-v2/alert"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	log "github.com/sirupsen/logrus"
 )
 
+// GetAlerts returns all alerts including there details for the given query.
 func GetAlerts(cfg config.Config, lvl log.Level, query string, limit int) ([]alert.GetAlertResult, error) {
 	alertClient, err := alert.NewClient(&client.Config{
 		ApiKey:         cfg.ApiKey,
@@ -29,22 +32,31 @@ func GetAlerts(cfg config.Config, lvl log.Level, query string, limit int) ([]ale
 	}
 
 	var alerts []alert.GetAlertResult
+	var waitgroup sync.WaitGroup
 
 	for _, a := range res.Alerts {
-		alertRes, err := alertClient.Get(nil, &alert.GetAlertRequest{
-			IdentifierType:  alert.ALERTID,
-			IdentifierValue: a.Id,
-		})
-		if err != nil {
-			return nil, err
-		}
+		waitgroup.Add(1)
 
-		alerts = append(alerts, *alertRes)
+		go func(a alert.Alert) {
+			alertRes, err := alertClient.Get(nil, &alert.GetAlertRequest{
+				IdentifierType:  alert.ALERTID,
+				IdentifierValue: a.Id,
+			})
+			if err != nil {
+				log.WithError(err).Errorf("Could not get alert details for %s (%s)", a.Message, a.TinyID)
+			}
+			alerts = append(alerts, *alertRes)
+			waitgroup.Done()
+		}(a)
 	}
+
+	waitgroup.Wait()
 
 	return alerts, nil
 }
 
+// AlertAction applies the given action to the given alert. Valid actions are "Acknowledge", "Close" and "Snooze".
+// If the action is "Snooze" the duration until the alert should be snoozed is required.
 func AlertAction(cfg config.Config, lvl log.Level, a alert.GetAlertResult, action string, snoozeDuration time.Duration) (string, error) {
 	alertClient, err := alert.NewClient(&client.Config{
 		ApiKey:         cfg.ApiKey,
