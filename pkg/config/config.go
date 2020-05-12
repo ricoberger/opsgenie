@@ -6,7 +6,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// Config represents the structure of the configuration file
+// Config represents the structure of the configuration file.
 type Config struct {
 	ApiKey    string `yaml:"apiKey"`
 	ApiUrl    string `yaml:"apiUrl"`
@@ -19,7 +19,7 @@ type Config struct {
 	} `yaml:"templates"`
 }
 
-// LoadConfig reads the configuration file and unmarshal the data into the config struct
+// LoadConfig reads the configuration file and unmarshal the data into the config struct.
 func (c *Config) LoadConfig(file string) error {
 	data, err := ioutil.ReadFile(file)
 	if err != nil {
