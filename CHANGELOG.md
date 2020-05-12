@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.0.1](https://github.com/ricoberger/opsgenie/tree/v1.0.1) (2020-05-12)
+
+[Full Changelog](https://github.com/ricoberger/opsgenie/compare/1.0.0...v1.0.1)
+
+**Implemented enhancements:**
+
+- Improve load performance [\#1](https://github.com/ricoberger/opsgenie/pull/1) ([ricoberger](https://github.com/ricoberger))
+
 ## [1.0.0](https://github.com/ricoberger/opsgenie/tree/1.0.0) (2020-05-11)
 
 [Full Changelog](https://github.com/ricoberger/opsgenie/compare/30489da9a700500354ccc9fb68b57fac537993e7...1.0.0)
