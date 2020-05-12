@@ -1,8 +1,8 @@
 # Changelog
 
-## [v1.0.1](https://github.com/ricoberger/opsgenie/tree/v1.0.1) (2020-05-12)
+## [1.0.1](https://github.com/ricoberger/opsgenie/tree/1.0.1) (2020-05-12)
 
-[Full Changelog](https://github.com/ricoberger/opsgenie/compare/1.0.0...v1.0.1)
+[Full Changelog](https://github.com/ricoberger/opsgenie/compare/1.0.0...1.0.1)
 
 **Implemented enhancements:**
 
