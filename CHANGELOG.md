@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/ricoberger/opsgenie/tree/1.1.0) (2020-11-14)
+
+[Full Changelog](https://github.com/ricoberger/opsgenie/compare/1.0.1...1.1.0)
+
+**Implemented enhancements:**
+
+- Do not close the application after an action [\#3](https://github.com/ricoberger/opsgenie/pull/3) ([ricoberger](https://github.com/ricoberger))
+
+**Fixed bugs:**
+
+- Preserve order of alerts [\#2](https://github.com/ricoberger/opsgenie/pull/2) ([ricoberger](https://github.com/ricoberger))
+
 ## [1.0.1](https://github.com/ricoberger/opsgenie/tree/1.0.1) (2020-05-12)
 
 [Full Changelog](https://github.com/ricoberger/opsgenie/compare/1.0.0...1.0.1)
