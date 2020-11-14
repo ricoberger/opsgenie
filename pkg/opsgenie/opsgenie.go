@@ -2,6 +2,7 @@ package opsgenie
 
 import (
 	"fmt"
+	"sort"
 	"sync"
 	"time"
 
@@ -25,7 +26,9 @@ func GetAlerts(cfg config.Config, lvl log.Level, query string, limit int) ([]ale
 
 	res, err := alertClient.List(nil, &alert.ListAlertRequest{
 		Limit: limit,
+		Order: alert.Desc,
 		Query: query,
+		Sort:  alert.CreatedAt,
 	})
 	if err != nil {
 		return nil, err
@@ -33,10 +36,9 @@ func GetAlerts(cfg config.Config, lvl log.Level, query string, limit int) ([]ale
 
 	var alerts []alert.GetAlertResult
 	var waitgroup sync.WaitGroup
+	waitgroup.Add(len(res.Alerts))
 
 	for _, a := range res.Alerts {
-		waitgroup.Add(1)
-
 		go func(a alert.Alert) {
 			alertRes, err := alertClient.Get(nil, &alert.GetAlertRequest{
 				IdentifierType:  alert.ALERTID,
@@ -51,6 +53,10 @@ func GetAlerts(cfg config.Config, lvl log.Level, query string, limit int) ([]ale
 	}
 
 	waitgroup.Wait()
+
+	sort.Slice(alerts, func(i, j int) bool {
+		return alerts[i].CreatedAt.After(alerts[j].CreatedAt)
+	})
 
 	return alerts, nil
 }
