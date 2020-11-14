@@ -11,6 +11,7 @@ import (
 	"github.com/ricoberger/opsgenie/pkg/prompt"
 	"github.com/ricoberger/opsgenie/pkg/version"
 
+	"github.com/manifoldco/promptui"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -36,12 +37,15 @@ var rootCmd = &cobra.Command{
 			log.SetFormatter(&log.TextFormatter{})
 		}
 
-		log.SetReportCaller(true)
 		lvl, err := log.ParseLevel(logLevel)
 		if err != nil {
 			log.WithError(err).Fatal("Could not set log level")
 		}
 		log.SetLevel(lvl)
+
+		if lvl == log.DebugLevel {
+			log.SetReportCaller(true)
+		}
 
 		log.Debugf(version.Info())
 		log.Debugf(version.BuildContext())
@@ -56,39 +60,50 @@ var rootCmd = &cobra.Command{
 
 		log.Debugf("Config loaded: %#v", cfg)
 
-		alerts, err := opsgenie.GetAlerts(cfg, lvl, query, limit)
-		if err != nil {
-			log.WithError(err).Fatalf("Could not load alerts")
-		}
-
-		alert, err := prompt.SelectAlert(cfg, alerts)
-		if err != nil {
-			log.WithError(err).Fatalf("Could not select alert")
-		}
-
-		action, err := prompt.SelectAction(alert)
-		if err != nil {
-			log.WithError(err).Fatalf("Could not select action")
-		}
-
-		if action == "Quit Opsgenie" {
-			return
-		}
-
-		var snoozeDuration time.Duration
-		if action == "Snooze" {
-			snoozeDuration, err = prompt.SetSnoozeDuration()
+		for {
+			alerts, err := opsgenie.GetAlerts(cfg, lvl, query, limit)
 			if err != nil {
-				log.WithError(err).Fatalf("Could set snooze duration")
+				log.WithError(err).Fatalf("Could not load alerts")
 			}
-		}
 
-		msg, err := opsgenie.AlertAction(cfg, lvl, alert, action, snoozeDuration)
-		if err != nil {
-			log.WithError(err).Fatalf("Could not apply action")
-		}
+			alert, err := prompt.SelectAlert(cfg, alerts)
+			if err != nil {
+				if err == promptui.ErrInterrupt {
+					return
+				}
+				log.WithError(err).Fatalf("Could not select alert")
+			}
 
-		fmt.Println(msg)
+			action, err := prompt.SelectAction(alert)
+			if err != nil {
+				if err == promptui.ErrInterrupt {
+					return
+				}
+				log.WithError(err).Fatalf("Could not select action")
+			}
+
+			if action == "Cancel" {
+				continue
+			}
+
+			var snoozeDuration time.Duration
+			if action == "Snooze" {
+				snoozeDuration, err = prompt.SetSnoozeDuration()
+				if err != nil {
+					if err == promptui.ErrInterrupt {
+						return
+					}
+					log.WithError(err).Fatalf("Could set snooze duration")
+				}
+			}
+
+			msg, err := opsgenie.AlertAction(cfg, lvl, alert, action, snoozeDuration)
+			if err != nil {
+				log.WithError(err).Fatalf("Could not apply action")
+			}
+
+			fmt.Println(msg)
+		}
 	},
 }
 
