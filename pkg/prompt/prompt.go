@@ -49,7 +49,7 @@ func SelectAlert(cfg config.Config, alerts []alert.GetAlertResult) (alert.GetAle
 func SelectAction(a alert.GetAlertResult) (string, error) {
 	prompt := promptui.Select{
 		Label:  "Action for " + a.Message,
-		Items:  []string{"Acknowledge", "Close", "Snooze", "Quit Opsgenie"},
+		Items:  []string{"Acknowledge", "Close", "Snooze", "Cancel"},
 		Stdout: &bellSkipper{},
 	}
 
