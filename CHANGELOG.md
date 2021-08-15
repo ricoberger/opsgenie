@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.1](https://github.com/ricoberger/opsgenie/tree/1.1.1) (2021-08-15)
+
+[Full Changelog](https://github.com/ricoberger/opsgenie/compare/1.1.0...1.1.1)
+
+**Merged pull requests:**
+
+- Remove deprecated set-env command [\#5](https://github.com/ricoberger/opsgenie/pull/5) ([ricoberger](https://github.com/ricoberger))
+- Update Dependencies and License [\#4](https://github.com/ricoberger/opsgenie/pull/4) ([ricoberger](https://github.com/ricoberger))
+
 ## [1.1.0](https://github.com/ricoberger/opsgenie/tree/1.1.0) (2020-11-14)
 
 [Full Changelog](https://github.com/ricoberger/opsgenie/compare/1.0.1...1.1.0)
